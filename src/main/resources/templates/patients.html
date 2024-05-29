@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html	lang="en" 
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="template1.html"
+		>
+<head>
+    <meta charset="UTF-8">
+    <title>Patient List</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <h2 class="my-4">List of Patients</h2>
+        
+        <!-- Display success or error message -->
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Malade</th>
+                    <th>Date de Naissance</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="patient : ${listPatients}">
+                    <td th:text="${patient.id}"/>
+                    <td th:text="${patient.nom}"/>
+                    <td th:text="${patient.malade}"/>
+                    <td th:text="${#dates.format(patient.dateNaissance, 'dd/MM/yyyy')}"/>
+                    <td th:text="${patient.score}"/>
+                    <td>
+                        <a onclick="return confirm('Êtes-vous sûr de vouloir supprimer ?')" th:href="@{/delete/{id}(id=${patient.id}, page=${currentPage}, size=${size}, keyword=${keyword})}" class="btn btn-danger">Delete</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/edit/{id}(id=${patient.id}, page=${currentPage}, size=${size}, keyword=${keyword})}" class="btn btn-info">Edit</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/index(page=${currentPage - 1}, size=${size}, keyword=${keyword})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i, iterStat : ${#numbers.sequence(0, pages.length - 1)}" th:classappend="${i == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/index(page=${i}, size=${size}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == pages.length - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/index(page=${currentPage + 1}, size=${size}, keyword=${keyword})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- Page size selection -->
+        <div class="mt-4 col-md-6 offset-3">
+            <form id="sizeForm" th:action="@{/index}" method="get">
+                <div class="form-group">
+                    <label for="size">Page size:</label>
+                    <select id="size" name="size" class="form-control" onchange="document.getElementById('page').value=0; this.form.submit()">
+                        <option th:value="4" th:selected="${size == 4}">4</option>
+                        <option th:value="8" th:selected="${size == 8}">8</option>
+                        <option th:value="12" th:selected="${size == 12}">12</option>
+                    </select>
+                </div>
+                <input type="hidden" id="page" name="page" th:value="${currentPage}">
+                <input type="hidden" name="keyword" th:value="${keyword}">
+            </form>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html	lang="en" 
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="template1.html"
+		>
+<head>
+ <meta charset="UTF-8">
+    <title>Patient Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div layout:fragment="content">
+<div class="container">
+    <h2 class="my-4" th:text="${#strings.isEmpty(patient.id) ? 'New Patient' : 'Edit Patient'}"></h2>
+
+    <form th:action="@{${#strings.isEmpty(patient.id) ? '/formPatient' : '/edit/' + patient.id}}" th:object="${patient}" method="post" class="needs-validation" novalidate>
+    <input type="hidden" th:field="*{id}">
+    <input type="hidden" name="page" th:value="${currentPage}">
+    <input type="hidden" name="size" th:value="${size}">
+    <input type="hidden" name="keyword" th:value="${keyword}">
+    <!-- Other form fields -->
+        <div class="form-group">
+            <label for="name">Nom</label>
+            <input type="text" class="form-control" id="name" th:field="*{nom}" placeholder="Enter patient name" required>
+            <div class="invalid-feedback">
+                Please provide a name.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="malade">Malade</label>
+            <select class="form-control" id="malade" th:field="*{malade}" required>
+                <option value="false">Select...</option>
+                <option th:value="true" th:text="'Yes'"></option>
+                <option th:value="false" th:text="'No'"></option>
+            </select>
+            <div class="invalid-feedback">
+                Please select an option.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dateNaissance">Date de Naissance</label>
+            <input type="date" class="form-control" id="dateNaissance" th:field="*{dateNaissance}" required>
+            <div class="invalid-feedback">
+                Please provide a birth date.
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="score">Score</label>
+            <input type="number" class="form-control" id="score" th:field="*{score}" placeholder="Enter score" required>
+            <div class="invalid-feedback">
+                Please provide a score.
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+</div>
+</body>
+</html>
